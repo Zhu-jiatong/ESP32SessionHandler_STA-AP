@@ -1,7 +1,7 @@
 {
     "configuration": "CDCOnBoot=default,PartitionScheme=min_spiffs,CPUFreq=160,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none,EraseFlash=all",
     "board": "esp32:esp32:XIAO_ESP32C3",
-    "output": "./output",
+    "output": "../output",
     "sketch": "main.ino",
     "port": "COM6"
 }
