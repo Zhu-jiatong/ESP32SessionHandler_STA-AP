@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <lwip/etharp.h>
 #include <esp_wifi.h>
+#include <Arduino_JSON.h>
 
 struct SessionInfo_t
 {
@@ -13,37 +14,11 @@ struct SessionInfo_t
     eth_addr _mac{};
     String _userID;
 
+    JSONVar toJSON();
     operator bool() const { return _userID.length(); }
-
-    SessionInfo_t(const uint32_t &ip, const eth_addr mac, const String &id) : _ip(ip), _mac(mac), _userID(id)
-    {
-
-#if defined(DEBUG_SESSIONMANAGER)
-
-        Serial.println("Session created");
-        Serial.printf("IP: %u\n", _ip);
-        Serial.print("MAC: ");
-        for (auto &&i : _mac.addr)
-            Serial.printf("%u:", i);
-        Serial.printf("\nID: %s\n\n", _userID);
-
-#endif // DEBUG_SESSIONMANAGER
-    }
-
+    SessionInfo_t(const uint32_t &ip, const eth_addr mac, const String &id);
     SessionInfo_t(){};
-#if defined(DEBUG_SESSIONMANAGER)
-
-    ~SessionInfo_t()
-    {
-        Serial.println("Session removed:");
-        Serial.printf("IP: %u\n", _ip);
-        Serial.print("MAC: ");
-        for (auto &&i : _mac.addr)
-            Serial.printf("%u:", i);
-        Serial.printf("\nID: %s\n\n", _userID);
-    }
-
-#endif // DEBUG_SESSIONMANAGER
+    ~SessionInfo_t();
 };
 
 namespace cst
@@ -68,6 +43,8 @@ namespace cst
 
         SessionInfo_t emptySession;
     };
+
+    extern ESPSessionManager session_manager;
 } // namespace cst
 
 #endif // ESPSESSIONMANAGER_h

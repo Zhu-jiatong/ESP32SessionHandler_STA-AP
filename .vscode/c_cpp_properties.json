@@ -216,6 +216,7 @@
                 "C:\\Users\\jiaji\\Documents\\Arduino\\libraries\\ESPAsyncWebServer\\src",
                 "C:\\Users\\jiaji\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\libraries\\FS\\src",
                 "C:\\Users\\jiaji\\Documents\\Arduino\\libraries\\AsyncTCP\\src",
+                "C:\\Users\\jiaji\\Documents\\Arduino\\libraries\\Arduino_JSON\\src",
                 "c:\\users\\jiaji\\appdata\\local\\arduino15\\packages\\esp32\\tools\\riscv32-esp-elf-gcc\\gcc8_4_0-esp-2021r2-patch3\\riscv32-esp-elf\\include\\c++\\8.4.0",
                 "c:\\users\\jiaji\\appdata\\local\\arduino15\\packages\\esp32\\tools\\riscv32-esp-elf-gcc\\gcc8_4_0-esp-2021r2-patch3\\riscv32-esp-elf\\include\\c++\\8.4.0\\riscv32-esp-elf\\rv32imc\\ilp32",
                 "c:\\users\\jiaji\\appdata\\local\\arduino15\\packages\\esp32\\tools\\riscv32-esp-elf-gcc\\gcc8_4_0-esp-2021r2-patch3\\riscv32-esp-elf\\include\\c++\\8.4.0\\backward",

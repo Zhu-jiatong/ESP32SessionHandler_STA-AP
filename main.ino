@@ -6,7 +6,6 @@
 
 AsyncWebServer server(80);
 DNSServer dns_ap;
-cst::ESPSessionManager session_manager;
 
 void handleRoot(AsyncWebServerRequest *request);
 void handleAuth(AsyncWebServerRequest *request);
@@ -42,7 +41,7 @@ void loop()
 
 void handleRoot(AsyncWebServerRequest *request)
 {
-    auto auth_ret = session_manager.getSessionInfo(request);
+    auto auth_ret = cst::session_manager.getSessionInfo(request);
     Serial.println(bool(auth_ret));
     Serial.println(auth_ret._ip);
     for (auto &&i : auth_ret._mac.addr)
@@ -54,10 +53,10 @@ void handleRoot(AsyncWebServerRequest *request)
 
 void handleAuth(AsyncWebServerRequest *request)
 {
-    session_manager.newSession(request, request->getParam("id")->value());
+    cst::session_manager.newSession(request, request->getParam("id")->value());
 }
 
 void handleLogoff(AsyncWebServerRequest *request)
 {
-    session_manager.removeSession(request);
+    cst::session_manager.removeSession(request);
 }

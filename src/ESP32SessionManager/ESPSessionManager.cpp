@@ -2,6 +2,45 @@
 
 #include "ESPSessionManager.hpp"
 
+JSONVar SessionInfo_t::toJSON()
+{
+    JSONVar session_JSON;
+    session_JSON["ip"] = _ip;
+    session_JSON["id"] = _userID;
+    for (auto it = std::make_pair(0, std::begin(_mac.addr)); it.second != std::end(_mac.addr); ++it.first, ++it.second)
+        session_JSON["mac"][it.first] = *it.second;
+
+    return session_JSON;
+}
+
+SessionInfo_t::SessionInfo_t(const uint32_t &ip, const eth_addr mac, const String &id) : _ip(ip), _mac(mac), _userID(id)
+{
+#if defined(DEBUG_SESSIONMANAGER)
+
+    Serial.println("Session created");
+    Serial.printf("IP: %u\n", _ip);
+    Serial.print("MAC: ");
+    for (auto &&i : _mac.addr)
+        Serial.printf("%u:", i);
+    Serial.printf("\nID: %s\n\n", _userID);
+
+#endif // DEBUG_SESSIONMANAGER
+}
+
+SessionInfo_t::~SessionInfo_t()
+{
+#if defined(DEBUG_SESSIONMANAGER)
+
+    Serial.println("Session removed:");
+    Serial.printf("IP: %u\n", _ip);
+    Serial.print("MAC: ");
+    for (auto &&i : _mac.addr)
+        Serial.printf("%u:", i);
+    Serial.printf("\nID: %s\n\n", _userID);
+
+#endif // DEBUG_SESSIONMANAGER
+}
+
 namespace cst
 {
     eth_addr *ESPSessionManager::get_sta_mac(const uint32_t &ip)
@@ -97,4 +136,6 @@ namespace cst
             if (std::equal(std::begin(client->second._mac.addr), std::end(client->second._mac.addr), std::begin(mac)))
                 ap_sessions.erase(client);
     }
+
+    ESPSessionManager session_manager;
 } // namespace cst
