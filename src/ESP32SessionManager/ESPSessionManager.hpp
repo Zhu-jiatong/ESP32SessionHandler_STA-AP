@@ -2,7 +2,7 @@
 #define ESPSESSIONMANAGER_h
 
 #include <WiFi.h>
-#include <ESPAsyncWebServer.h>
+// #include <ESPAsyncWebServer.h>
 #include <unordered_map>
 #include <lwip/etharp.h>
 #include <esp_wifi.h>
@@ -32,12 +32,14 @@ namespace cst
         void onStaDisconnect(const uint8_t (&mac)[6]); // remove session once a AP station disconnects from Wi-Fi
 
     public:
-        SessionInfo_t getSessionInfo(AsyncWebServerRequest *request);
-        void newSession(AsyncWebServerRequest *request, const String &id);
-        void removeSession(AsyncWebServerRequest *request);
+        SessionInfo_t getSessionInfo(const IPAddress &localIP, const uint32_t &remoteAddr);
+        void newSession(const IPAddress &localIP, const uint32_t &remoteAddr, const String &id);
+        void removeSession(const IPAddress &localIP, const uint32_t &remoteAddr);
         eth_addr *get_sta_mac(const uint32_t &ip);
         SessionInfo_t handle_sta_ip(const uint32_t &ip);
         SessionInfo_t handle_ap_ip(const uint32_t &ip);
+        inline bool isSTA(const IPAddress &localIP);
+        inline bool isAP(const IPAddress &localIP);
 
         ESPSessionManager(); // register Wi-Fi event handlers for connection and disconnection
 

@@ -7,8 +7,8 @@ JSONVar SessionInfo_t::toJSON()
     JSONVar session_JSON;
     session_JSON["ip"] = _ip;
     session_JSON["id"] = _userID;
-    for (auto it = std::make_pair(0, std::begin(_mac.addr)); it.second != std::end(_mac.addr); ++it.first, ++it.second)
-        session_JSON["mac"][it.first] = *it.second;
+    for (uint8_t i = 0, *it = std::begin(_mac.addr); it != std::end(_mac.addr); ++it, ++i)
+        session_JSON["mac"][i] = *it;
 
     return session_JSON;
 }
@@ -64,35 +64,34 @@ namespace cst
         auto thisSession = sta_sessions.find(ip);
         if (thisSession != sta_sessions.end())
         {
-            auto macCheck = std::equal(std::begin(thisSession->second._mac.addr), std::end(thisSession->second._mac.addr), std::begin(get_sta_mac(ip)->addr));
-            if (macCheck)
+            if (std::equal(std::begin(thisSession->second._mac.addr), std::end(thisSession->second._mac.addr), std::begin(get_sta_mac(ip)->addr)))
                 return thisSession->second;
             sta_sessions.erase(ip);
         }
         return emptySession;
     }
 
-    SessionInfo_t ESPSessionManager::getSessionInfo(AsyncWebServerRequest *request)
+    SessionInfo_t ESPSessionManager::getSessionInfo(const IPAddress &localIP, const uint32_t &remoteAddr)
     {
-        if (ON_AP_FILTER(request))
-            return handle_ap_ip(request->client()->getRemoteAddress());
-        return handle_sta_ip(request->client()->getRemoteAddress());
+        if (isAP(localIP))
+            return handle_ap_ip(remoteAddr);
+        return handle_sta_ip(remoteAddr);
     }
 
-    void ESPSessionManager::newSession(AsyncWebServerRequest *request, const String &id)
+    void ESPSessionManager::newSession(const IPAddress &localIP, const uint32_t &remoteAddr, const String &id)
     {
-        if (ON_STA_FILTER(request))
-            sta_sessions.emplace(request->client()->getRemoteAddress(), SessionInfo_t(request->client()->getRemoteAddress(), *get_sta_mac(request->client()->getRemoteAddress()), id));
+        if (isSTA(localIP))
+            sta_sessions.emplace(remoteAddr, SessionInfo_t(remoteAddr, *get_sta_mac(remoteAddr), id));
         else
-            ap_sessions.at(request->client()->getRemoteAddress())._userID = id;
+            ap_sessions.at(remoteAddr)._userID = id;
     }
 
-    void ESPSessionManager::removeSession(AsyncWebServerRequest *request)
+    void ESPSessionManager::removeSession(const IPAddress &localIP, const uint32_t &remoteAddr)
     {
-        if (ON_STA_FILTER(request))
-            sta_sessions.erase(request->client()->getRemoteAddress());
+        if (isSTA(localIP))
+            sta_sessions.erase(remoteAddr);
         else
-            ap_sessions.at(request->client()->getRemoteAddress())._userID = emptyString;
+            ap_sessions.at(remoteAddr)._userID = emptyString;
     }
 
     ESPSessionManager::ESPSessionManager()
@@ -135,6 +134,16 @@ namespace cst
         for (auto client = ap_sessions.begin(); client != ap_sessions.end(); ++client)
             if (std::equal(std::begin(client->second._mac.addr), std::end(client->second._mac.addr), std::begin(mac)))
                 ap_sessions.erase(client);
+    }
+
+    inline bool ESPSessionManager::isAP(const IPAddress &localIP)
+    {
+        return WiFi.localIP() != localIP;
+    }
+
+    inline bool ESPSessionManager::isSTA(const IPAddress &localIP)
+    {
+        return WiFi.localIP() == localIP;
     }
 
     ESPSessionManager session_manager;

@@ -3,6 +3,7 @@
 #define DEBUG_SESSIONMANAGER
 
 #include "src/ESP32SessionManager/ESPSessionManager.hpp"
+#include <ESPAsyncWebServer.h>
 
 AsyncWebServer server(80);
 DNSServer dns_ap;
@@ -41,7 +42,7 @@ void loop()
 
 void handleRoot(AsyncWebServerRequest *request)
 {
-    auto auth_ret = cst::session_manager.getSessionInfo(request);
+    auto auth_ret = cst::session_manager.getSessionInfo(request->client()->localIP(), request->client()->getRemoteAddress());
     Serial.println(bool(auth_ret));
     Serial.println(auth_ret._ip);
     for (auto &&i : auth_ret._mac.addr)
@@ -53,10 +54,10 @@ void handleRoot(AsyncWebServerRequest *request)
 
 void handleAuth(AsyncWebServerRequest *request)
 {
-    cst::session_manager.newSession(request, request->getParam("id")->value());
+    cst::session_manager.newSession(request->client()->localIP(), request->client()->getRemoteAddress(), request->getParam("id")->value());
 }
 
 void handleLogoff(AsyncWebServerRequest *request)
 {
-    cst::session_manager.removeSession(request);
+    cst::session_manager.removeSession(request->client()->localIP(), request->client()->getRemoteAddress());
 }
